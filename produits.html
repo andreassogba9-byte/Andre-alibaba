@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Produits</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Accueil</a> |
+    <a href="produits.html">Produits</a> |
+    <a href="commandes.html">Commandes</a> |
+    <a href="profil.html">Profil</a>
+  </nav>
+
+  <h1>Produits</h1>
+
+  <!-- Formulaire d'ajout produit -->
+  <h2>Ajouter un produit</h2>
+  <form id="add-product-form">
+    <input type="text" id="product-name" placeholder="Nom du produit" required>
+    <input type="number" id="product-price" placeholder="Prix (FCFA)" required>
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <h2>Liste des produits</h2>
+  <ul id="products-list"></ul>
+
+  <script>
+    async function loadProducts() {
+      const { data, error } = await supabase.from("produits").select("*");
+      const list = document.getElementById("products-list");
+      list.innerHTML = "";
+
+      if (error) {
+        list.innerHTML = "Erreur de chargement : " + error.message;
+      } else {
+        data.forEach(p => {
+          const li = document.createElement("li");
+          li.textContent = p.nom + " - " + p.prix + " FCFA";
+          list.appendChild(li);
+        });
+      }
+    }
+
+    document.getElementById("add-product-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nom = document.getElementById("product-name").value;
+      const prix = document.getElementById("product-price").value;
+
+      const { error } = await supabase.from("produits").insert([{ nom, prix }]);
+
+      if (error) {
+        alert("Erreur : " + error.message);
+      } else {
+        alert("Produit ajouté ✅");
+        loadProducts();
+      }
+    });
+
+    loadProducts();
+  </script>
+</body>
+</html>
