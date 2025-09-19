@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Commandes</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Accueil</a> |
+    <a href="produits.html">Produits</a> |
+    <a href="commandes.html">Commandes</a> |
+    <a href="profil.html">Profil</a>
+  </nav>
+
+  <h1>Commandes</h1>
+
+  <h2>Nouvelle commande</h2>
+  <form id="add-order-form">
+    <input type="number" id="product-id" placeholder="ID Produit" required>
+    <input type="number" id="quantity" placeholder="Quantité" required>
+    <button type="submit">Commander</button>
+  </form>
+
+  <h2>Liste des commandes</h2>
+  <ul id="orders-list"></ul>
+
+  <script>
+    async function loadOrders() {
+      const { data, error } = await supabase.from("commandes").select("*");
+      const list = document.getElementById("orders-list");
+      list.innerHTML = "";
+
+      if (error) {
+        list.innerHTML = "Erreur : " + error.message;
+      } else {
+        data.forEach(o => {
+          const li = document.createElement("li");
+          li.textContent = "Commande #" + o.id + " - Produit " + o.produit_id + " x " + o.quantite;
+          list.appendChild(li);
+        });
+      }
+    }
+
+    document.getElementById("add-order-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const produit_id = document.getElementById("product-id").value;
+      const quantite = document.getElementById("quantity").value;
+
+      const { error } = await supabase.from("commandes").insert([{ produit_id, quantite }]);
+
+      if (error) {
+        alert("Erreur : " + error.message);
+      } else {
+        alert("Commande ajoutée ✅");
+        loadOrders();
+      }
+    });
+
+    loadOrders();
+  </script>
+</body>
+</html>
