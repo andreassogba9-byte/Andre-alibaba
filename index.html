@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Alibaba - Accueil</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body>
+  <!-- Menu de navigation -->
+  <nav>
+    <a href="index.html">Accueil</a> |
+    <a href="produits.html">Produits</a> |
+    <a href="commandes.html">Commandes</a> |
+    <a href="profil.html">Profil</a>
+  </nav>
+
+  <h1>Bienvenue sur Mon Alibaba</h1>
+  <p>Connectez-vous ou inscrivez-vous pour commencer.</p>
+
+  <!-- Formulaire d'inscription -->
+  <h2>Inscription</h2>
+  <form id="signup-form">
+    <input type="email" id="signup-email" placeholder="Votre email" required>
+    <input type="password" id="signup-password" placeholder="Mot de passe" required>
+    <select id="signup-role" required>
+      <option value="">Choisir un rôle</option>
+      <option value="acheteur">Acheteur</option>
+      <option value="vendeur">Vendeur</option>
+    </select>
+    <button type="submit">S'inscrire</button>
+  </form>
+
+  <!-- Formulaire de connexion -->
+  <h2>Connexion</h2>
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Votre email" required>
+    <input type="password" id="login-password" placeholder="Mot de passe" required>
+    <button type="submit">Se connecter</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    // Inscription
+    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      const role = document.getElementById("signup-role").value;
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { role }
+        }
+      });
+
+      if (error) {
+        document.getElementById("message").textContent = "Erreur : " + error.message;
+      } else {
+        document.getElementById("message").textContent = "Inscription réussie, vérifiez votre email !";
+      }
+    });
+
+    // Connexion
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        document.getElementById("message").textContent = "Erreur : " + error.message;
+      } else {
+        document.getElementById("message").textContent = "Connexion réussie ✅";
+        window.location.href = "produits.html"; // Redirige vers produits après connexion
+      }
+    });
+  </script>
+</body>
+    </html>
